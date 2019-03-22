@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.RentalServiceController">
+   <children>
+      <Pane prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <TextField fx:id="id_customer_begin" layoutX="37.0" layoutY="83.0" prefHeight="25.0" prefWidth="174.0" promptText="ID wypożyczającego klienta" />
+            <TextField fx:id="id_car_begin" layoutX="37.0" layoutY="133.0" prefHeight="25.0" prefWidth="174.0" promptText="ID samochodu" />
+            <Button fx:id="begin" layoutX="16.0" layoutY="206.0" mnemonicParsing="false" onAction="#begin" text="Rozpocznij wypożyczenie">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <TextField fx:id="id_customer_end" layoutX="341.0" layoutY="245.0" prefHeight="25.0" prefWidth="174.0" promptText="ID wypożyczenia" />
+            <ComboBox fx:id="damaged" layoutX="341.0" layoutY="286.0" prefHeight="25.0" prefWidth="174.0" promptText="Samochód uszkodzony?" />
+            <Button fx:id="end" layoutX="326.0" layoutY="330.0" mnemonicParsing="false" onAction="#end" text="Zakończ wypożyczenie">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <Button fx:id="back" layoutX="50.0" layoutY="311.0" mnemonicParsing="false" onAction="#back" prefHeight="51.0" prefWidth="148.0" text="Wróć">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Separator layoutX="257.0" layoutY="3.0" orientation="VERTICAL" prefHeight="392.0" prefWidth="7.0" />
+            <Pane fx:id="show_pane" layoutX="268.0" layoutY="65.0" prefHeight="160.0" prefWidth="320.0" />
+            <Text layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rozpocznij wypożyczenie" textAlignment="CENTER" wrappingWidth="257.390625">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text layoutX="257.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Zakończ wypożyczenie" textAlignment="CENTER" wrappingWidth="341.0087890625">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text layoutX="268.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Obecne wypożyczenia:" wrappingWidth="155.13671875">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+         </children>
+      </Pane>
+   </children>
+</StackPane>

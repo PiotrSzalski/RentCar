@@ -1,0 +1,307 @@
+call rozpocznij(5,6,'2018-12-20');
+id_customer,id_car,data
+call zakoncz(10,'TAK','2018-12-30');
+id_rental,uszkodzony,data
+create database rentcar;
+
+create table manager (id_manager int auto_increment, username varchar(20), password varchar(20), first_name varchar(20), last_name varchar(20), phone_number char(9), pesel char(11), address varchar(40), primary key (id_manager),unique key username (username));
+
+create table employee (id_employee int auto_increment, username varchar(20), password varchar(20), first_name varchar(20), last_name varchar(20), phone_number char(9), pesel char(11), address varchar(40), primary key (id_employee), unique key username (username));
+
+create table customer (id_customer int auto_increment, username varchar(20), password varchar(20), first_name varchar(20), last_name varchar(20), phone_number char(9), pesel char(11), address varchar(40),active tinyint(1), primary key (id_customer), unique key username (username));
+
+create table discount (id_discount int auto_increment, discount_description varchar(60), value int, primary key (id_discount));
+
+create table customer_discount (id_customer int, id_discount int, foreign key (id_customer) references customer(id_customer), foreign key (id_discount) references discount(id_discount));
+
+create table tariff (id_tariff int auto_increment, deposit int, price_per_night int, primary key (id_tariff));
+
+create table car (id_car int auto_increment, registration_number varchar(10), brand varchar(20), model varchar(20), car_type enum('kombi','coupe','sedan','limuzna','SUV','hatchback','kabriolet'), number_of_seats tinyint, tariff int, damaged tinyint(1), next_inspection date, power int, status enum('Dostępny','Wypożyczony','Nie dostępny'), primary key (id_car), foreign key (tariff) references tariff(id_tariff));
+
+create table rental (id_rental int auto_increment, id_customer int, id_car int, begin date, end date, cost int, primary key (id_rental), foreign key (id_car) references car(id_car), foreign key (id_customer) references customer(id_customer));
+
+CREATE USER 'manager'@'localhost';
+SET PASSWORD FOR 'manager'@'localhost' = 'manager_password';
+GRANT SELECT, UPDATE ON rentcar.manager TO 'manager'@'localhost';
+GRANT SELECT, UPDATE, DELETE, INSERT ON rentcar.employee TO 'manager'@'localhost';
+GRANT SELECT, UPDATE, DELETE, INSERT ON rentcar.tariff TO 'manager'@'localhost';
+GRANT SELECT, UPDATE, INSERT ON rentcar.car TO 'manager'@'localhost';
+GRANT EXECUTE ON rentcar.* TO 'manager'@'localhost';
+GRANT TRIGGER ON rentcar.* TO 'manager'@'localhost';
+
+CREATE USER 'employee'@'localhost';
+SET PASSWORD FOR 'employee'@'localhost' = 'employee_password';
+GRANT SELECT, UPDATE ON rentcar.employee TO 'employee'@'localhost';
+GRANT SELECT, UPDATE, INSERT ON rentcar.customer TO 'employee'@'localhost';
+GRANT SELECT, UPDATE, INSERT ON rentcar.rental TO 'employee'@'localhost';
+GRANT SELECT ON rentcar.car TO 'employee'@'localhost';
+GRANT SELECT ON rentcar.tariff TO 'employee'@'localhost';
+GRANT EXECUTE ON rentcar.* TO 'employee'@'localhost';
+GRANT TRIGGER ON rentcar.* TO 'employee'@'localhost';
+
+CREATE USER 'customer'@'localhost';
+SET PASSWORD FOR 'customer'@'localhost' = 'customer_password';
+GRANT SELECT ON rentcar.car TO 'customer'@'localhost';
+GRANT SELECT ON rentcar.tariff TO 'customer'@'localhost';
+GRANT SELECT ON rentcar.rental TO 'customer'@'localhost';
+GRANT SELECT ON rentcar.discount TO 'customer'@'localhost';
+GRANT SELECT ON rentcar.customer_discount TO 'customer'@'localhost';
+GRANT SELECT, UPDATE ON rentcar.customer TO 'customer'@'localhost';
+
+DELIMITER $$
+CREATE TRIGGER (update)insert_car BEFORE (update)insert ON car
+FOR EACH ROW
+BEGIN
+	IF new.power < 0 or new.number_of_seats <= 0 then 
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Ujemna wartość';
+    end if;
+    if new.damaged != 0 and new.damaged != 1 then 
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Niepoprawna wartość';
+	end if;
+END $$
+DELIMITER ;
+
+delimiter $$
+create trigger (update)insert_discount before (update)insert on discount
+for each row
+begin
+	if new.value < 0 then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Ujemna wartość';		
+	end if;
+END $$
+delimiter ;
+
+DELIMITER $$
+CREATE TRIGGER (update)insert_rental BEFORE (update)INSERT ON rental
+FOR EACH ROW
+BEGIN
+	IF new.damaged != 0 and new.damaged != 1 then 
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Niepoprawna wartość';
+    end if;
+    if new.end < new.begin then 
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Niepoprawne daty';
+    end if;
+    IF new.cost < 0 then 
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Ujemna wartość';
+    end if;
+END $$
+DELIMITER ;
+
+delimiter $$
+create trigger (update)insert_tariff before (update)insert on tariff
+for each row
+begin
+	if new.deposit < 0 or new.price_per_night < 0 then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Ujemna wartość';		
+	end if;
+END $$
+delimiter ;
+
+delimiter $$
+create trigger update(insert)_customer before (update)insert on customer
+for each row
+begin
+	declare i int;
+	set i=1;
+	if char_length(new.pesel)<>11 then
+		SIGNAL SQLSTATE '12346'
+				SET MESSAGE_TEXT = 'Błędny pesel';
+	end if;
+	while i<=11 do
+		if substr(new.pesel,i,1) NOT REGEXP '[0-9]' then
+			SIGNAL SQLSTATE '12346'
+				SET MESSAGE_TEXT = 'Błędny pesel';
+		end if;
+		set i=i+1;
+	end while;
+	end $$
+delimiter ;
+
+delimiter $$
+create trigger (update)insert_employee before (update)insert on employee
+for each row
+begin
+	declare i int;
+	set i=1;
+	if char_length(new.pesel)<>11 then
+		SIGNAL SQLSTATE '12346'
+				SET MESSAGE_TEXT = 'Błędny pesel';
+	end if;
+	while i<=11 do
+		if substr(new.pesel,i,1) NOT REGEXP '[0-9]' then
+			SIGNAL SQLSTATE '12346'
+				SET MESSAGE_TEXT = 'Błędny pesel';
+		end if;
+		set i=i+1;
+	end while;
+	end $$
+delimiter ;
+
+delimiter $$
+create trigger (insert)update_manager before (insert)update on manager
+for each row
+begin
+	declare i int;
+	set i=1;
+	if char_length(new.pesel)<>11 then
+		SIGNAL SQLSTATE '12346'
+				SET MESSAGE_TEXT = 'Błędny pesel';
+	end if;
+	while i<=11 do
+		if substr(new.pesel,i,1) NOT REGEXP '[0-9]' then
+			SIGNAL SQLSTATE '12346'
+				SET MESSAGE_TEXT = 'Błędny pesel';
+		end if;
+		set i=i+1;
+	end while;
+	end $$
+delimiter ;
+
+DELIMITER $$
+CREATE TRIGGER update_car BEFORE UPDATE ON car
+FOR EACH ROW
+BEGIN
+	IF new.status not like 'Dostępny' && new.tariff!=old.tariff THEN
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie można zmienic taryfy';
+	END IF;
+    if old.status not like 'Dostępny' && new.status like 'Nie dostępny' then  
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie można usunąć samochodu';
+    end if;
+    if old.status not like 'Dostępny' && new.status like 'Wypożyczony' then  
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie można wypożyczyć samochodu';
+    end if;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+create procedure delete_customer(customer_id int)
+begin
+	declare customerid int;
+    declare rentalid int;
+    set rentalid = 0;
+    set customerid = 0;
+    select id_customer into customerid from customer where id_customer=customer_id and active=1;
+    if customerid = 0 then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie ma takiego aktywnego klienta';
+	end if;
+    select id_rental into rentalid from rental where id_customer = customerid and end is null limit 1;
+    if rentalid != 0 then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Klient ma wypożyczone auto';
+	end if;
+    update customer set active=0,username=null,password=null where id_customer=customerid; 
+    delete from customer_discount where id_customer=customerid;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+create procedure begin_rental(customer_id int,car_id int)
+begin
+	declare carid int;
+    declare customerid int;
+    set carid = 0;
+    set customerid = 0;
+    select id_car into carid from car where id_car=car_id and status like 'Dostępny' and damaged=0 and datediff(date_add(curdate(),interval 14 day),next_inspection)<0;
+    select id_customer into customerid from customer where id_customer=customer_id and active=1;
+    if carid = 0 or customerid = 0 then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie można wypożyczyć samochodu';
+	end if;
+    SET autocommit = 1;
+    start transaction;
+		insert into rental (id_customer,id_car,begin) values (customerid,carid,curdate());
+        update car set status='Wypożyczony' where id_car=carid;
+	commit;
+    if (select status from car where id_car=carid) like 'Dostępny' then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie udało się wypożyczyć samochodu';
+	end if;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+create procedure end_rental(rental_id int,damaged enum('TAK','NIE'))
+begin
+	declare rentalid int;
+    declare date_begin date;
+    declare customer int;
+    declare car int;
+    declare rent_cost int;
+    declare days int;
+    declare dis1 int;
+    declare dis2 int;
+    declare n_cars int;
+    set rentalid = 0;
+    set dis1 = 0;
+    set dis2 = 0;
+	set rent_cost = 0;
+    select id_rental into rentalid from rental where id_rental=rental_id and end is null;
+    if rentalid = 0 then
+		SIGNAL SQLSTATE '12345'
+            SET MESSAGE_TEXT = 'Nie ma takiego wypożyczenia.';
+	end if;
+    select begin,id_customer,id_car into date_begin,customer,car from rental where id_rental = rentalid;
+    set days = datediff(curdate(),date_begin);
+    if days = 0 then 
+		set days = 1;
+	end if;
+    if damaged like 'NIE' then
+		select liczba into n_cars from (select count(*) as liczba from rental where id_customer=customer and rental.damaged=0 and end is not null) a;
+        if n_cars = 4 then
+			set dis1 = 1;
+        elseif n_cars = 9 then
+			set dis1 = 2;
+		elseif n_cars = 14 then
+			set dis1 = 3;
+		elseif n_cars = 19 then
+			set dis1 = 4;
+		end if;
+        
+        if days>=5 and days<10 then
+			set dis2 = 5;
+        elseif days>=10 and days<15 then
+			set dis2 = 6;
+		elseif days>=15 and days<20 then
+			set dis2 = 7;
+		elseif days>=20 then
+			set dis2 = 8;
+		end if;
+	end if;
+	set rent_cost = days * (select price_per_night from tariff where id_tariff=(select tariff from car where id_car=car));
+    set autocommit = 1;
+    start transaction;
+		if damaged like 'TAK' then
+			update rental set end=curdate(),damaged=1,cost=rent_cost where id_rental = rentalid;
+		else 
+			update rental set end=curdate(),damaged=0,cost=rent_cost where id_rental = rentalid;
+		end if;
+        update car set status='Dostępny' where id_car=car;
+        if damaged like 'TAK' then
+            update car set damaged=1 where id_car=car;
+		end if;
+        if dis1 != 0 then
+			delete from customer_discount where id_discount between 1 and 4 and id_customer=customer;
+			insert into customer_discount values (customer,dis1);
+		end if;
+        if dis2 != 0 then
+			if (select count(*) as ilosc from customer_discount where id_customer=customer and id_discount between 5 and 8)=0 then 
+				insert into customer_discount values (customer,dis2);
+			elseif (select id_discount from customer_discount where id_customer=customer and id_discount between 5 and 8) < dis2 then
+				delete from customer_discount where id_discount between 5 and 8 and id_customer=customer;
+                insert into customer_discount values (customer,dis2);
+			end if;
+		end if;
+    commit;
+END $$
+DELIMITER ;

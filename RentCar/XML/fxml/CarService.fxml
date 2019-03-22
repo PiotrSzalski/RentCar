@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.CarServiceController">
+   <children>
+      <Pane prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="previous" layoutX="32.0" layoutY="13.0" mnemonicParsing="false" onAction="#go_previous" prefHeight="51.0" prefWidth="80.0" text="&lt;">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Button fx:id="next" layoutX="483.0" layoutY="13.0" mnemonicParsing="false" onAction="#go_next" prefHeight="51.0" prefWidth="80.0" text="&gt;">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Text fx:id="text" layoutX="115.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="368.0">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <Button fx:id="back" layoutX="32.0" layoutY="317.0" mnemonicParsing="false" onAction="#back" prefHeight="51.0" prefWidth="131.0" text="Wróć">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Pane fx:id="add_pane" layoutX="34.0" layoutY="71.0" prefHeight="240.0" prefWidth="530.0">
+               <children>
+                  <TextField fx:id="registration_number" layoutX="14.0" layoutY="29.0" promptText="Numer rejestracyjny" />
+                  <TextField fx:id="brand" layoutX="14.0" layoutY="70.0" promptText="Marka" />
+                  <TextField fx:id="model" layoutX="14.0" layoutY="108.0" promptText="Model" />
+                  <ComboBox fx:id="type" layoutX="191.0" layoutY="29.0" prefWidth="150.0" promptText="Rodzaj" />
+                  <TextField fx:id="number_of_seats" layoutX="192.0" layoutY="70.0" promptText="Liczba miejsc" />
+                  <DatePicker fx:id="next_inspection" layoutX="173.0" layoutY="108.0" prefHeight="25.0" prefWidth="186.0" promptText="Data nastęonego przeglądu" />
+                  <TextField fx:id="price_per_night" layoutX="369.0" layoutY="29.0" promptText="Cena za dobę" />
+                  <TextField fx:id="deposit" layoutX="369.0" layoutY="70.0" promptText="Kaucja" />
+                  <TextField fx:id="power" layoutX="369.0" layoutY="108.0" promptText="Moc" />
+                  <Button fx:id="add" layoutX="176.0" layoutY="167.0" mnemonicParsing="false" onAction="#add_car" prefHeight="51.0" prefWidth="180.0" text="Dodaj">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="edit_pane" layoutX="35.0" layoutY="71.0" prefHeight="240.0" prefWidth="530.0">
+               <children>
+                  <TextField fx:id="edit_id" layoutX="150.0" layoutY="10.0" prefHeight="40.0" prefWidth="220.0" promptText="Id samochodu" />
+                  <TextField fx:id="edit_deposit" layoutX="150.0" layoutY="65.0" prefHeight="40.0" prefWidth="220.0" promptText="Kaucja" />
+                  <TextField fx:id="edit_price" layoutX="150.0" layoutY="120.0" prefHeight="40.0" prefWidth="220.0" promptText="Cena za dobę" />
+                  <Button fx:id="edit" layoutX="183.0" layoutY="175.0" mnemonicParsing="false" onAction="#edit_tariff" prefHeight="51.0" prefWidth="164.0" text="Zmień">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="delete_pane" layoutX="35.0" layoutY="71.0" prefHeight="240.0" prefWidth="530.0">
+               <children>
+                  <TextField fx:id="delete_id" layoutX="142.0" layoutY="62.0" prefHeight="51.0" prefWidth="245.0" promptText="Id samochodu do usunięcia">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="delete_button" layoutX="195.0" layoutY="130.0" mnemonicParsing="false" onAction="#delete_car" prefHeight="51.0" prefWidth="140.0" text="Usuń">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+            <Pane fx:id="repair_pane" layoutX="3.0" layoutY="71.0" prefHeight="240.0" prefWidth="594.0">
+               <children>
+                  <Separator layoutX="294.0" orientation="VERTICAL" prefHeight="240.0" prefWidth="0.0" />
+                  <TextArea fx:id="damaged_list" editable="false" layoutX="14.0" layoutY="32.0" prefHeight="99.0" prefWidth="268.0" />
+                  <TextArea fx:id="inspection_list" editable="false" layoutX="309.0" layoutY="32.0" prefHeight="99.0" prefWidth="275.0" />
+                  <Text layoutX="5.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Uszkodzone samochody" textAlignment="CENTER" wrappingWidth="293.4375">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="303.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Samochody wymagające przeglądu " textAlignment="CENTER" wrappingWidth="286.99999129772186">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="id_repaired" layoutX="59.0" layoutY="160.0" prefHeight="25.0" prefWidth="186.0" promptText="Id naprawionego samochodu" />
+                  <TextField fx:id="id_inspected" layoutX="354.0" layoutY="148.0" prefHeight="25.0" prefWidth="186.0" promptText="Id samchodu po przeglądzie" />
+                  <DatePicker fx:id="date_next" layoutX="354.0" layoutY="185.0" prefHeight="25.0" prefWidth="186.0" promptText="Data następnego przeglądu" />
+               </children>
+            </Pane>
+            <Button fx:id="enter" layoutX="271.0" layoutY="325.0" mnemonicParsing="false" onAction="#enter_repair" text="Wprowadź">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <RadioButton fx:id="old_cars" layoutX="231.0" layoutY="311.0" mnemonicParsing="false" onAction="#old_car" prefHeight="87.0" prefWidth="257.0" text="Wczytaj samochody których nie ma już w wpożyczalni" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </RadioButton>
+            <Pane fx:id="show_pane" layoutY="70.0" prefHeight="240.0" prefWidth="600.0" />
+         </children>
+      </Pane>
+   </children>
+</StackPane>
